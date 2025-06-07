@@ -24,7 +24,7 @@ public class DayRemover {
             System.out.println("Entry not found.");
         }
         DayRecorder.saveData(dayEntries);
-        System.out.println(dayEntries);
+//        System.out.println(dayEntries);
 
     }
 

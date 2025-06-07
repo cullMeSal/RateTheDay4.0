@@ -54,7 +54,8 @@ public AppUI() throws Exception {
         dayField.setText(String.valueOf(today.getDayOfMonth()));
         monthField.setText(String.valueOf(today.getMonthValue()));
         yearField.setText(String.valueOf(today.getYear()));
-
+        
+               
         // Set up month calendar
         
 //        String[] months = Arrays.stream(Month.values())
@@ -66,7 +67,7 @@ public AppUI() throws Exception {
         for (int i = currentYear - 100; i <= currentYear + 50; i++) {
             yearBox.addItem(i);
         }
-        monthBox.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
+        monthBox.setSelectedIndex(today.getMonthValue() - 1);
         yearBox.setSelectedItem(currentYear);
 
         String[] headers = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -110,19 +111,19 @@ public AppUI() throws Exception {
                     monthField.setText(String.valueOf(found.getMonth()));
                     yearField.setText(String.valueOf(found.getYear()));
                     
-                    
                 } else {
                     ratingComboBox.setSelectedItem("1");
-                    noteTextArea.setText("NaN");
+                    noteTextArea.setText("");
                 }
                 String chosenDate = formatDateNumber(String.valueOf(val))+ " / " +
                         formatDateNumber(monthBox.getSelectedItem().toString())+ " / " + 
                         yearBox.getSelectedItem();
-                System.out.println(chosenDate);
+//                System.out.println(chosenDate);
                 chosenDateLabel.setText(chosenDate);
+                dayBox.setSelectedItem(val);
                 
                 Day chosenDay = new Day(date);
-                System.out.println(chosenDay);
+//                System.out.println(chosenDay);
 
             }
         });
@@ -133,8 +134,11 @@ public AppUI() throws Exception {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String date = String.format("%s-%s-%s",yearField.getText(),formatDateNumber(monthField.getText().toString()),formatDateNumber(dayField.getText().toString()));
-                System.out.println(date);
+                String date = String.format("%s-%s-%s",
+                        yearBox.getSelectedItem(),
+                        formatDateNumber(monthBox.getSelectedItem().toString()),
+                        formatDateNumber(dayBox.getSelectedItem().toString()));
+//                System.out.println(date);
 
                 try {
                     DayRecorder.saveData(new Day(date, Integer.parseInt(ratingComboBox.getSelectedItem().toString()), noteTextArea.getText()));
@@ -150,8 +154,11 @@ public AppUI() throws Exception {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String date = String.format("%s-%s-%s",yearBox.getSelectedItem(),formatDateNumber(monthBox.getSelectedItem().toString()),formatDateNumber(dayField.getText().toString()));
-                System.out.println(date);
+                String date = String.format("%s-%s-%s",
+                        yearBox.getSelectedItem(),
+                        formatDateNumber(monthBox.getSelectedItem().toString()),
+                        formatDateNumber(dayBox.getSelectedItem().toString()));
+                System.out.println("Date to be removed: "+ date);
 
                 try {
                     DayRemover.removeData(date);
@@ -168,6 +175,7 @@ public AppUI() throws Exception {
         int year = (int) yearBox.getSelectedItem();
         int month = monthBox.getSelectedIndex() + 1;
         tableModel.setRowCount(0);
+        dayBox.removeAllItems();
 
         LocalDate firstOfMonth = LocalDate.of(year, month, 1);
         int startDay = firstOfMonth.getDayOfWeek().getValue() % 7; // Sunday=0
@@ -185,6 +193,7 @@ public AppUI() throws Exception {
 //                    for (String str : week){
 //                        System.out.println(str);
 //                    }
+                    dayBox.addItem(String.valueOf(dayCounter));
                     dayCounter++;
                 } else {
                     week[j] = null;
@@ -193,6 +202,7 @@ public AppUI() throws Exception {
             }
             tableModel.addRow(week);
         }
+        dayBox.setSelectedItem(String.valueOf(LocalDate.now().getDayOfMonth()));
     }
 
 
@@ -232,6 +242,8 @@ public AppUI() throws Exception {
         monthBox = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         yearBox = new javax.swing.JComboBox<>();
+        jLabel7 = new javax.swing.JLabel();
+        dayBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("uullala");
@@ -266,11 +278,6 @@ public AppUI() throws Exception {
 
         deleteButton.setText("Delete");
         deleteButton.setPreferredSize(new java.awt.Dimension(90, 20));
-        deleteButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                deleteButtonMouseClicked(evt);
-            }
-        });
 
         jLabel6.setText("Chosen Date:");
         jLabel6.setAutoscrolls(true);
@@ -285,53 +292,49 @@ public AppUI() throws Exception {
         crudPanelLayout.setHorizontalGroup(
             crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(crudPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(crudPanelLayout.createSequentialGroup()
-                        .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(crudPanelLayout.createSequentialGroup()
+                        .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(dayField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(crudPanelLayout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(crudPanelLayout.createSequentialGroup()
-                                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(dayField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
-                                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(crudPanelLayout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(monthField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, crudPanelLayout.createSequentialGroup()
-                                        .addGap(6, 6, 6)
-                                        .addComponent(chosenDateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(yearField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(ratingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(crudPanelLayout.createSequentialGroup()
-                        .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                                .addComponent(monthField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, crudPanelLayout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(chosenDateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(yearField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ratingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGroup(crudPanelLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(noteTextArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(crudPanelLayout.createSequentialGroup()
+                .addComponent(noteTextArea, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
                 .addContainerGap())
         );
         crudPanelLayout.setVerticalGroup(
             crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(crudPanelLayout.createSequentialGroup()
+                .addGap(9, 9, 9)
                 .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dayField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(monthField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(yearField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ratingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -342,7 +345,7 @@ public AppUI() throws Exception {
                 .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         entryList.setModel(new javax.swing.AbstractListModel<String>() {
@@ -397,6 +400,8 @@ public AppUI() throws Exception {
 
         yearBox.setModel(new DefaultComboBoxModel<>(new Integer[] {}));
 
+        jLabel7.setText("Day");
+
         javax.swing.GroupLayout thirdPanelLayout = new javax.swing.GroupLayout(thirdPanel);
         thirdPanel.setLayout(thirdPanelLayout);
         thirdPanelLayout.setHorizontalGroup(
@@ -404,18 +409,20 @@ public AppUI() throws Exception {
             .addGroup(thirdPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, thirdPanelLayout.createSequentialGroup()
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(thirdPanelLayout.createSequentialGroup()
+                        .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(dayBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(monthBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(yearBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(271, 271, 271))
-                    .addGroup(thirdPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         thirdPanelLayout.setVerticalGroup(
             thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -423,11 +430,13 @@ public AppUI() throws Exception {
                 .addContainerGap()
                 .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel5))
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(yearBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(monthBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(monthBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dayBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -490,14 +499,19 @@ public AppUI() throws Exception {
             dayField.setText(String.valueOf(found.getDayOfMonth()));
             monthField.setText(String.valueOf(found.getMonth()));
             yearField.setText(String.valueOf(found.getYear()));
+            
+            
+            monthBox.setSelectedItem(String.valueOf(found.getMonth()-1));
+            yearBox.setSelectedItem(found.getYear());
+
+            System.out.println("Number of item in dayBox: "+ dayBox.getItemCount());
+//            SwingUtilities.invokeLater(() -> {
+                dayBox.setSelectedItem(String.valueOf(found.getDayOfMonth()));
+//            });            
         }
     }
 
     }//GEN-LAST:event_entryListValueChanged
-
-    private void deleteButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteButtonMouseClicked
-updateCalendar();        // TODO add your handling code here:
-    }//GEN-LAST:event_deleteButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -552,6 +566,7 @@ updateCalendar();        // TODO add your handling code here:
     private javax.swing.JTable calendarTable;
     private javax.swing.JLabel chosenDateLabel;
     private javax.swing.JPanel crudPanel;
+    private javax.swing.JComboBox<String> dayBox;
     private javax.swing.JTextField dayField;
     private javax.swing.JButton deleteButton;
     private javax.swing.JList<String> entryList;
@@ -561,6 +576,7 @@ updateCalendar();        // TODO add your handling code here:
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel mainPanel;
