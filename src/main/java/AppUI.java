@@ -18,9 +18,12 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.time.*;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
-
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneLightIJTheme;
 
 
 public class AppUI extends javax.swing.JFrame {
@@ -35,13 +38,25 @@ public AppUI() throws Exception {
         LocalDate today = LocalDate.now();
 //        List<Day> dayList = DayReader.readDayFile("dayData.json");
         dayEntries = DayReader.readDayFile("dayData.json");
-
+//        ArrayList<String> entryStringList = new ArrayList<String>();
+//        for (Day day : dayEntries){
+//            entryStringList.add(day.getDateISO());
+//        }
+//        Collections.sort(entryStringList);
+//        
+//        DefaultListModel<String> dayListModel = new DefaultListModel<>();
+//        entryList.setModel(dayListModel);
+//        
+//        for (String str : entryStringList) {
+//            dayListModel.addElement(str);
+//        }
         DefaultListModel<String> dayListModel = new DefaultListModel<>();
         entryList.setModel(dayListModel);
-        
-        for (Day day : dayEntries) {
-            dayListModel.addElement(day.getDateISO());
-        }
+
+        dayEntries.stream()
+            .map(Day::getDateISO)
+            .sorted()
+            .forEach(dayListModel::addElement);
 
         NumberFormat format = NumberFormat.getIntegerInstance();
         format.setGroupingUsed(false);
@@ -50,10 +65,6 @@ public AppUI() throws Exception {
         intFormatter.setMinimum(1);
         intFormatter.setAllowsInvalid(false);
 
-        // Set up date input fields
-        dayField.setText(String.valueOf(today.getDayOfMonth()));
-        monthField.setText(String.valueOf(today.getMonthValue()));
-        yearField.setText(String.valueOf(today.getYear()));
         
                
         // Set up month calendar
@@ -97,19 +108,21 @@ public AppUI() throws Exception {
                 String date = String.format("%s-%s-%s",yearBox.getSelectedItem(),formatDateNumber(monthBox.getSelectedItem().toString()),formatDateNumber(String.valueOf(val)));
                 System.out.println("ISO format: " + date);
                 
-                Day found = null;
-                for (Day day : dayEntries){
-                    if (day.getDateISO().equals(date)){
-                        found = day;
-                        break;
-                    }
-                }
+//                Day found = null;
+//                for (Day day : dayEntries){
+//                    if (day.getDateISO().equals(date)){
+//                        found = day;
+//                        break;
+//                    }
+//                }
+                Day found = dayEntries.stream()
+                        .filter(day -> day.getDateISO().equals(date))
+                        .findFirst()
+                        .orElse(null);
+                
                 if (found != null){
                     ratingComboBox.setSelectedItem(String.valueOf(found.getRating()));
                     noteTextArea.setText(found.getNote());
-                    dayField.setText(String.valueOf(found.getDayOfMonth()));
-                    monthField.setText(String.valueOf(found.getMonth()));
-                    yearField.setText(String.valueOf(found.getYear()));
                     
                 } else {
                     ratingComboBox.setSelectedItem("1");
@@ -122,12 +135,12 @@ public AppUI() throws Exception {
                 chosenDateLabel.setText(chosenDate);
                 dayBox.setSelectedItem(val);
                 
-                Day chosenDay = new Day(date);
+//                Day chosenDay = new Day(date);
 //                System.out.println(chosenDay);
 
             }
         });
-
+//        jPanel1.setVisible(false);
         updateCalendar();
         
         entryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -203,6 +216,7 @@ public AppUI() throws Exception {
             tableModel.addRow(week);
         }
         dayBox.setSelectedItem(String.valueOf(LocalDate.now().getDayOfMonth()));
+        System.out.println("End of update ------");
     }
 
 
@@ -217,162 +231,103 @@ public AppUI() throws Exception {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         mainPanel = new javax.swing.JPanel();
-        crudPanel = new javax.swing.JPanel();
-        noteTextArea = new java.awt.TextArea();
         ratingComboBox = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        dayField = new javax.swing.JTextField();
-        monthField = new javax.swing.JTextField();
-        yearField = new javax.swing.JTextField();
-        saveButton = new javax.swing.JButton();
-        deleteButton = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         chosenDateLabel = new javax.swing.JLabel();
-        secondPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        entryList = new javax.swing.JList<>();
-        thirdPanel = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        noteTextArea = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
         calendarTable = new javax.swing.JTable();
-        jLabel4 = new javax.swing.JLabel();
-        monthBox = new javax.swing.JComboBox<>();
-        jLabel5 = new javax.swing.JLabel();
-        yearBox = new javax.swing.JComboBox<>();
+        jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         dayBox = new javax.swing.JComboBox<>();
+        monthBox = new javax.swing.JComboBox<>();
+        yearBox = new javax.swing.JComboBox<>();
+        jPanel3 = new javax.swing.JPanel();
+        saveButton = new javax.swing.JButton();
+        deleteButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        entryList = new javax.swing.JList<>();
+        jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("uullala");
+        setTitle("Rate the Day");
 
-        mainPanel.setPreferredSize(new java.awt.Dimension(600, 300));
-
-        crudPanel.setPreferredSize(new java.awt.Dimension(300, 310));
+        mainPanel.setLayout(new java.awt.GridBagLayout());
 
         ratingComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
         ratingComboBox.setBorder(null);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 11, 0, 0);
+        mainPanel.add(ratingComboBox, gridBagConstraints);
 
-        jLabel1.setText("Day");
-        jLabel1.setAutoscrolls(true);
-        jLabel1.setPreferredSize(new java.awt.Dimension(100, 20));
-
-        jLabel2.setText("Year");
-        jLabel2.setAutoscrolls(true);
-        jLabel2.setPreferredSize(new java.awt.Dimension(100, 20));
-
-        jLabel3.setText("Month");
-        jLabel3.setAutoscrolls(true);
-        jLabel3.setPreferredSize(new java.awt.Dimension(100, 20));
-
-        dayField.setPreferredSize(new java.awt.Dimension(90, 22));
-
-        monthField.setPreferredSize(new java.awt.Dimension(90, 22));
-
-        yearField.setPreferredSize(new java.awt.Dimension(90, 22));
-
-        saveButton.setText("Save");
-        saveButton.setPreferredSize(new java.awt.Dimension(90, 20));
-
-        deleteButton.setText("Delete");
-        deleteButton.setPreferredSize(new java.awt.Dimension(90, 20));
-
-        jLabel6.setText("Chosen Date:");
+        jLabel6.setText("List of entry");
         jLabel6.setAutoscrolls(true);
         jLabel6.setPreferredSize(new java.awt.Dimension(100, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+        mainPanel.add(jLabel6, gridBagConstraints);
+
+        jLabel8.setText("Rating:");
+        jLabel8.setAutoscrolls(true);
+        jLabel8.setPreferredSize(new java.awt.Dimension(100, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.ipadx = 2;
+        gridBagConstraints.ipady = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 5, 0);
+        mainPanel.add(jLabel8, gridBagConstraints);
 
         chosenDateLabel.setText("...");
         chosenDateLabel.setAutoscrolls(true);
         chosenDateLabel.setPreferredSize(new java.awt.Dimension(100, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 11, 0, 0);
+        mainPanel.add(chosenDateLabel, gridBagConstraints);
 
-        javax.swing.GroupLayout crudPanelLayout = new javax.swing.GroupLayout(crudPanel);
-        crudPanel.setLayout(crudPanelLayout);
-        crudPanelLayout.setHorizontalGroup(
-            crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(crudPanelLayout.createSequentialGroup()
-                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(crudPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(crudPanelLayout.createSequentialGroup()
-                        .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(dayField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(crudPanelLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(monthField, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, crudPanelLayout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(chosenDateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(yearField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ratingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGroup(crudPanelLayout.createSequentialGroup()
-                .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(crudPanelLayout.createSequentialGroup()
-                .addComponent(noteTextArea, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        crudPanelLayout.setVerticalGroup(
-            crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(crudPanelLayout.createSequentialGroup()
-                .addGap(9, 9, 9)
-                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0)
-                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dayField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(monthField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(yearField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, 0)
-                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ratingComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chosenDateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(noteTextArea, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(crudPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel1.setAlignmentX(1.0F);
+        jPanel1.setAlignmentY(1.0F);
+        jPanel1.setAutoscrolls(true);
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
-        entryList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        entryList.setPreferredSize(new java.awt.Dimension(1, 90));
-        entryList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                entryListValueChanged(evt);
-            }
-        });
-        jScrollPane1.setViewportView(entryList);
+        jScrollPane3.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        javax.swing.GroupLayout secondPanelLayout = new javax.swing.GroupLayout(secondPanel);
-        secondPanel.setLayout(secondPanelLayout);
-        secondPanelLayout.setHorizontalGroup(
-            secondPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        secondPanelLayout.setVerticalGroup(
-            secondPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(secondPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        noteTextArea.setColumns(20);
+        noteTextArea.setLineWrap(true);
+        noteTextArea.setRows(5);
+        noteTextArea.setWrapStyleWord(true);
+        noteTextArea.setBorder(null);
+        noteTextArea.setLineWrap(true);
+        jScrollPane3.setViewportView(noteTextArea);
+
+        jPanel1.add(jScrollPane3, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        mainPanel.add(jPanel1, gridBagConstraints);
 
         calendarTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -387,96 +342,129 @@ public AppUI() throws Exception {
             }
         ));
         calendarTable.setColumnSelectionAllowed(true);
+        calendarTable.setPreferredSize(new java.awt.Dimension(400, 150));
         calendarTable.setRowHeight(30);
         calendarTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(calendarTable);
         calendarTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
-        jLabel4.setText("Month");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 400.0;
+        gridBagConstraints.weighty = 300.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
+        mainPanel.add(jScrollPane2, gridBagConstraints);
 
-        monthBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-
-        jLabel5.setText("Year");
-
-        yearBox.setModel(new DefaultComboBoxModel<>(new Integer[] {}));
+        jPanel4.setLayout(new java.awt.GridLayout(2, 3, 5, 2));
 
         jLabel7.setText("Day");
+        jPanel4.add(jLabel7);
 
-        javax.swing.GroupLayout thirdPanelLayout = new javax.swing.GroupLayout(thirdPanel);
-        thirdPanel.setLayout(thirdPanelLayout);
-        thirdPanelLayout.setHorizontalGroup(
-            thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(thirdPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(thirdPanelLayout.createSequentialGroup()
-                        .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(dayBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(monthBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(yearBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        thirdPanelLayout.setVerticalGroup(
-            thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(thirdPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel7))
+        jLabel4.setText("Month");
+        jPanel4.add(jLabel4);
+
+        jLabel5.setText("Year");
+        jPanel4.add(jLabel5);
+
+        jPanel4.add(dayBox);
+
+        monthBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+        jPanel4.add(monthBox);
+
+        yearBox.setModel(new DefaultComboBoxModel<>(new Integer[] {}));
+        jPanel4.add(yearBox);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 14, 0);
+        mainPanel.add(jPanel4, gridBagConstraints);
+
+        saveButton.setText("Save");
+        saveButton.setPreferredSize(new java.awt.Dimension(90, 25));
+
+        deleteButton.setText("Delete");
+        deleteButton.setPreferredSize(new java.awt.Dimension(90, 25));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(thirdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(yearBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(monthBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(dayBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
-        mainPanel.setLayout(mainPanelLayout);
-        mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                .addComponent(secondPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(thirdPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(crudPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
-        );
-        mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(thirdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(secondPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(12, Short.MAX_VALUE))
-            .addComponent(crudPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        mainPanel.add(jPanel3, gridBagConstraints);
+
+        entryList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        entryList.setPreferredSize(new java.awt.Dimension(1, 90));
+        entryList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                entryListValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(entryList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 400.0;
+        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 9);
+        mainPanel.add(jScrollPane1, gridBagConstraints);
+
+        jLabel9.setText("Chosen Date:");
+        jLabel9.setAutoscrolls(true);
+        jLabel9.setPreferredSize(new java.awt.Dimension(100, 20));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(2, 0, 0, 0);
+        mainPanel.add(jLabel9, gridBagConstraints);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 703, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(7, 7, 7)
+                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(8, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+                .addGap(9, 9, 9))
         );
 
         pack();
@@ -496,11 +484,7 @@ public AppUI() throws Exception {
         if (found != null){
             ratingComboBox.setSelectedItem(String.valueOf(found.getRating()));
             noteTextArea.setText(found.getNote());
-            dayField.setText(String.valueOf(found.getDayOfMonth()));
-            monthField.setText(String.valueOf(found.getMonth()));
-            yearField.setText(String.valueOf(found.getYear()));
-            
-            
+  
             monthBox.setSelectedItem(String.valueOf(found.getMonth()-1));
             yearBox.setSelectedItem(found.getYear());
 
@@ -520,20 +504,32 @@ public AppUI() throws Exception {
     public static void main(String args[]) throws Exception {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+                /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+                 * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+                 */
+//                try {
+//                    for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                        System.out.println(info.getName());
+//                        if ("Nimbus".equals(info.getName())) {
+//                            javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                            System.out.println(info.getClassName());
+//                        
+//                        }
+//                    }
+//                } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+//                    logger.log(java.util.logging.Level.SEVERE, null, ex);
+//                }
+                //</editor-fold>
+                
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+        // Set FlatLaf Cupertino Light theme
+        UIManager.setLookAndFeel(new FlatAtomOneLightIJTheme());
+        
+        // OR you can use the built-in FlatLightLaf (plain light theme)
+        // UIManager.setLookAndFeel(new FlatLightLaf());
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
@@ -543,11 +539,6 @@ public AppUI() throws Exception {
                 System.getLogger(AppUI.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
         });
-//        JFrame frame = new JFrame("Rate the Day prototype");
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        frame.setSize(800,300);
-//        frame.setContentPane(new NewAppUI().getPanel());
-//        frame.setVisible(true);
     }
     
 
@@ -565,29 +556,26 @@ public AppUI() throws Exception {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable calendarTable;
     private javax.swing.JLabel chosenDateLabel;
-    private javax.swing.JPanel crudPanel;
     private javax.swing.JComboBox<String> dayBox;
-    private javax.swing.JTextField dayField;
     private javax.swing.JButton deleteButton;
     private javax.swing.JList<String> entryList;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JComboBox<String> monthBox;
-    private javax.swing.JTextField monthField;
-    private java.awt.TextArea noteTextArea;
+    private javax.swing.JTextArea noteTextArea;
     private javax.swing.JComboBox<String> ratingComboBox;
     private javax.swing.JButton saveButton;
-    private javax.swing.JPanel secondPanel;
-    private javax.swing.JPanel thirdPanel;
     private javax.swing.JComboBox<Integer> yearBox;
-    private javax.swing.JTextField yearField;
     // End of variables declaration//GEN-END:variables
 }
