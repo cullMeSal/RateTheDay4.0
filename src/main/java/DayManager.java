@@ -1,19 +1,53 @@
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
 
-public class DayRecorder {
-    static String dataPath = "dayData.json";
-    public DayRecorder() throws Exception {
-    }
-
+public class DayManager {
     static ObjectMapper mapper = new ObjectMapper();
+    public static List<Day> readDayFile(String path)throws IOException{
+        
+        List<Day> days;
+        try {
+            days = mapper.readValue(new File(path), new TypeReference<List<Day>>(){});
+            return days;
+        } catch (IOException ex) {
+            System.getLogger(DayReader.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            DayRecorder.saveDefaultData();
+            System.out.println("Path not found, creating and reading from default data file.");
+            days = mapper.readValue(new File("dayData.json"), new TypeReference<List<Day>>(){});
+            return days;
+        }
+    }
+    
+    public static void removeData(String date) throws Exception {
+        List<Day> dayEntries = DayReader.readDayFile(dataPath);
 
+        Day found = dayEntries.stream()
+                .filter(d -> d.getDateISO().equals(date))
+                .findFirst()
+                .orElse(null);
+
+//        for (Day d : dayEntries) {
+//            if (d.getDateISO().equals(date)) {
+//                found = d;
+//                break;
+//            }
+//        }
+        if (found != null) {
+            dayEntries.remove(found);
+            System.out.println("Entry removed.");
+        } else {
+            System.out.println("Entry not found.");
+        }
+        DayRecorder.saveData(dayEntries);
+//        System.out.println(dayEntries);
+
+    }
     public static void saveData(String dayISO, int score) throws IOException {
         mapper.writeValue(new File(dataPath), new Day(dayISO, score));
     }
@@ -72,22 +106,13 @@ public class DayRecorder {
             System.getLogger(DayRecorder.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
+    
+    static String dataPath = "dayData.json";
 
     public static void main(String[] args) throws Exception {
-        LocalDate localDate = LocalDate.now();
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter score: ");
-        int score = scanner.nextInt();
-        System.out.println(localDate.toString());
-
-        Day day1 = new Day("2025-01-03",2);
-        Day day2 = new Day(localDate.toString(),score);
-        Day[] dayList = {day1, day2};
-
-        saveData(Arrays.asList(dayList));
-//        saveData(day2);
-        System.out.println("end of file");
-
+        List<Day> days = readDayFile("result.json");
+        System.out.println(days.get(0));
     }
+    
+    
 }

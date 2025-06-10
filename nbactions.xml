@@ -11,9 +11,9 @@
             </goals>
             <properties>
                 <exec.vmArgs></exec.vmArgs>
-                <exec.args>--enable-preview ${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.appArgs></exec.appArgs>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.mainClass>AppUI</exec.mainClass>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -28,9 +28,9 @@
             </goals>
             <properties>
                 <exec.vmArgs>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
-                <exec.args>--enable-preview ${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.appArgs></exec.appArgs>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.mainClass>AppUI</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -46,9 +46,10 @@
             </goals>
             <properties>
                 <exec.vmArgs></exec.vmArgs>
-                <exec.args>--enable-preview ${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.mainClass>AppUI</exec.mainClass>
                 <exec.executable>java</exec.executable>
+                <exec.appArgs></exec.appArgs>
             </properties>
         </action>
         <action>
@@ -163,5 +164,17 @@
                 <exec.args></exec.args>
                 <argLine>--enable-preview</argLine>
             </properties>
+        </action>
+        <action>
+            <actionName>rebuild</actionName>
+            <preAction>build-with-dependencies</preAction>
+            <recursive>false</recursive>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>clean</goal>
+                <goal>install</goal>
+            </goals>
         </action>
     </actions>

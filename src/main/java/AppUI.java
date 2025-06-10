@@ -36,9 +36,14 @@ public class AppUI extends javax.swing.JFrame {
 public AppUI() throws Exception {
         initComponents();
         LocalDate today = LocalDate.now();
-//        List<Day> dayList = DayReader.readDayFile("dayData.json");
-        dayEntries = DayReader.readDayFile("dayData.json");
-//        ArrayList<String> entryStringList = new ArrayList<String>();
+//        List<Day> dayList = DayManager.readDayFile("dayData.json");
+        try {
+            dayEntries = DayManager.readDayFile("dayData.json");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Failed to load dayData.json:\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            dayEntries = new ArrayList<>(); // continue with empty data
+            
+}//        ArrayList<String> entryStringList = new ArrayList<String>();
 //        for (Day day : dayEntries){
 //            entryStringList.add(day.getDateISO());
 //        }
@@ -140,7 +145,6 @@ public AppUI() throws Exception {
 
             }
         });
-//        jPanel1.setVisible(false);
         updateCalendar();
         
         entryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -154,7 +158,7 @@ public AppUI() throws Exception {
 //                System.out.println(date);
 
                 try {
-                    DayRecorder.saveData(new Day(date, Integer.parseInt(ratingComboBox.getSelectedItem().toString()), noteTextArea.getText()));
+                    DayManager.saveData(new Day(date, Integer.parseInt(ratingComboBox.getSelectedItem().toString()), noteTextArea.getText()));
                     if (!dayListModel.contains(date)){
                         dayListModel.addElement(date);
                     }
@@ -174,7 +178,7 @@ public AppUI() throws Exception {
                 System.out.println("Date to be removed: "+ date);
 
                 try {
-                    DayRemover.removeData(date);
+                    DayManager.removeData(date);
                     dayListModel.removeElement(date);
                     updateDayEntries();
                 } catch (Exception ex) {
@@ -550,7 +554,7 @@ public AppUI() throws Exception {
         return Integer.parseInt(n) <10 ? "0"+ n : n;
     }
     public void updateDayEntries() throws Exception {
-        dayEntries = DayReader.readDayFile("dayData.json");
+        dayEntries = DayManager.readDayFile("dayData.json");
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
